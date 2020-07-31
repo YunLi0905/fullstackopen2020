@@ -1,6 +1,10 @@
 import React, { useState } from "react"
 import ReactDOM from "react-dom"
 
+const Header = props => {
+  return <h2>{props.text}</h2>
+}
+
 const Button = props => {
   return <button onClick={props.handleClick}>{props.text}</button>
 }
@@ -13,6 +17,18 @@ const incrementPoint = (points, selected, setPoints) => {
   setPoints(pointsCopy)
 }
 
+const indexOfMax = points => {
+  var max = points[0]
+  var maxIndex = 0
+
+  for (var i = 1; i < points.length; i++) {
+    if (points[i] > max) {
+      maxIndex = i
+      max = points[i]
+    }
+  }
+  return maxIndex
+}
 const App = props => {
   const [selected, setSelected] = useState(0)
   const [points, setPoints] = useState([0, 0, 0, 0, 0, 0])
@@ -20,6 +36,7 @@ const App = props => {
   console.log(points[selected])
   return (
     <div>
+      <Header text="Anecdote of the day" />
       <p>{props.anecdotes[selected]}</p>
       <p>has {points[selected]} votes</p>
       <Button
@@ -32,6 +49,9 @@ const App = props => {
         }}
         text="next anecdote"
       />
+      <Header text="Anecdote with most votes" />
+      <p>{props.anecdotes[indexOfMax(points)]}</p>
+      <p>has {points[indexOfMax(points)]} votes</p>
     </div>
   )
 }
