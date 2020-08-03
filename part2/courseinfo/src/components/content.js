@@ -1,11 +1,11 @@
 import React from "react"
 import Parts from "./parts"
 
-const Content = ({ courses }) => {
-  console.log("content", courses)
+const Content = ({ course }) => {
+  console.log("content", course)
   return (
     <div>
-      <Parts parts={courses.parts} />
+      <Parts parts={course.parts} />
     </div>
   )
 }
