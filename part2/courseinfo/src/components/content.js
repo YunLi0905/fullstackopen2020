@@ -1,12 +1,11 @@
 import React from "react"
-import Part from "./part"
+import Parts from "./parts"
 
-const Content = ({ course }) => {
+const Content = ({ courses }) => {
+  console.log("content", courses)
   return (
     <div>
-      <Part part={course.parts[0]} />
-      <Part part={course.parts[1]} />
-      <Part part={course.parts[2]} />
+      <Parts parts={courses.parts} />
     </div>
   )
 }
