@@ -1,5 +1,7 @@
 import React, { useState } from "react"
-import Person from "./components/person"
+import Persons from "./components/persons"
+import Filter from "./components/filter"
+import PersonForm from "./components/personForm"
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -11,14 +13,15 @@ const App = () => {
   const [newName, setNewName] = useState("")
   const [newNumber, setNewNumber] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
-  const [searchResults, setSearchResults] = useState([])
 
   const handleNameChange = event => {
+    event.preventDefault()
     console.log(event.target.value)
     setNewName(event.target.value)
   }
 
   const handleNumberChange = event => {
+    event.preventDefault()
     console.log(event.target.value)
     setNewNumber(event.target.value)
   }
@@ -41,43 +44,24 @@ const App = () => {
   }
 
   const handleSearch = event => {
+    event.preventDefault()
     setSearchTerm(event.target.value)
   }
-  React.useEffect(() => {
-    const results = persons.filter(person =>
-      person.name.toLowerCase().includes(searchTerm)
-    )
-    setSearchResults(results)
-  }, [searchTerm])
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form>
-        <div>
-          filter shown with:
-          <input value={searchTerm} onChange={handleSearch} />
-        </div>
-      </form>
-
+      <Filter searchTerm={searchTerm} handleSearch={handleSearch} />
       <h2>add a new</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        addPerson={addPerson}
+        newName={newName}
+        handleNameChange={handleNameChange}
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      <ul>
-        {searchResults.map(person => (
-          <Person key={person.name} person={person} />
-        ))}
-      </ul>
+      <Persons persons={persons} searchTerm={searchTerm} />
     </div>
   )
 }
