@@ -25,7 +25,11 @@ const App = () => {
   return (
     <div>
       <Filter searchTerm={searchTerm} handleSearch={handleSearch} />
-      <Countries countries={countries} searchTerm={searchTerm} />
+      <Countries
+        countries={countries}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
     </div>
   )
 }

@@ -10,7 +10,7 @@ const Country = ({ country }) => {
       <h3>languages</h3>
       <ul>
         {country.languages.map(language => (
-          <li>{language.name}</li>
+          <li key={language.name}>{language.name}</li>
         ))}
       </ul>
       <img src={country.flag} width="260" height="145" alt="Flag" />

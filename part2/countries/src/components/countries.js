@@ -1,9 +1,10 @@
 import React from "react"
 import Country from "./country"
+import Button from "./button"
 
 const Countries = props => {
   const showCountries = props.countries.filter(country =>
-    country.name.toLowerCase().includes(props.searchTerm)
+    country.name.toLowerCase().includes(props.searchTerm.toLowerCase())
   )
   console.log("show countries", showCountries)
 
@@ -13,7 +14,9 @@ const Countries = props => {
     return (
       <div>
         {showCountries.map(({ name }) => (
-          <ul key={name}>{name}</ul>
+          <ul key={name}>
+            {name} <Button handleClick={() => props.setSearchTerm(name)} />
+          </ul>
         ))}
       </div>
     )
