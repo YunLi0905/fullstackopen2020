@@ -21,7 +21,7 @@ const Countries = props => {
       </div>
     )
   } else if (showCountries.length === 1) {
-    return <Country country={showCountries[0]} />
+    return <Country country={showCountries[0]} weather={props.weather} />
   }
   return null
 }

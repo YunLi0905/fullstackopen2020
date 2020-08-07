@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
 
 import Filter from "./components/filter"
 import Countries from "./components/countries"
+import { fetchCountries } from "./api"
 
 const App = () => {
   const [countries, setCountries] = useState([])
@@ -14,12 +14,10 @@ const App = () => {
   }
 
   useEffect(() => {
-    console.log("effect")
-    axios.get("https://restcountries.eu/rest/v2/all").then(response => {
-      console.log("Countries")
-      setCountries(response.data)
-    })
+    console.log("App useEffect")
+    fetchCountries().then(setCountries)
   }, [])
+
   console.log("render", countries.length, "countries")
   console.log(countries)
   return (
