@@ -7,7 +7,11 @@ const Persons = props => {
       {props.persons
         .filter(person => person.name.toLowerCase().includes(props.searchTerm))
         .map(person => (
-          <Person key={person.name} person={person} />
+          <Person
+            key={person.id}
+            person={person}
+            handleClick={() => props.handleClick(person.id)}
+          />
         ))}
     </ul>
   )

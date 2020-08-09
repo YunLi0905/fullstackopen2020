@@ -49,6 +49,15 @@ const App = () => {
     }
   }
 
+  const handleDeletePerson = id => {
+    const person = persons.find(p => p.id === id)
+    const result = window.confirm(`Delete ${person.name}?`)
+    console.log(result)
+    if (result) {
+      personService.deletePerson(id, person)
+      setPersons(persons.filter(p => p.id !== id))
+    }
+  }
   const handleSearch = event => {
     event.preventDefault()
     setSearchTerm(event.target.value)
@@ -67,7 +76,11 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} searchTerm={searchTerm} />
+      <Persons
+        persons={persons}
+        searchTerm={searchTerm}
+        handleClick={handleDeletePerson}
+      />
     </div>
   )
 }
