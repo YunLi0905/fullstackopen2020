@@ -12,7 +12,8 @@ const App = () => {
   const [newName, setNewName] = useState("")
   const [newNumber, setNewNumber] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
-  const [result, setResult] = useState(false)
+  const [result, setResult] = useState("")
+  const [message, setMessage] = useState("")
 
   useEffect(() => {
     console.log("initialPersons")
@@ -51,6 +52,7 @@ const App = () => {
         }
         setNewPerson(personObject)
         personService.updatePerson(person.id, personObject)
+
         setPersons(
           persons.map(p => {
             if (p.id !== person.id) {
@@ -73,23 +75,48 @@ const App = () => {
         setNewName("")
         setNewNumber("")
         setResult(true)
+        setMessage("Added " + personObject.name)
       })
     }
     setTimeout(() => {
-      setResult(false)
+      setMessage("")
+      setResult("")
       setNewPerson("")
     }, 2000)
   }
 
   const handleDeletePerson = id => {
+    console.log("handleDeletePerson called with id =", id)
     const person = persons.find(p => p.id === id)
-    const result = window.confirm(`Delete ${person.name}?`)
-    console.log(result)
-    if (result) {
-      personService.deletePerson(id, person)
-      setPersons(persons.filter(p => p.id !== id))
-    }
+    personService.getOne(id).then(personInDb => {
+      if (!personInDb) {
+        setPersons(persons.filter(p => p.id !== id))
+        setResult(false)
+        setMessage(
+          "Information of " +
+            person.name +
+            " has already been removed from server"
+        )
+        setTimeout(() => {
+          setResult("")
+          setMessage("")
+        }, 2000)
+      } else {
+        const resultConfirmed = window.confirm(`Delete ${person.name}?`)
+        if (resultConfirmed) {
+          personService.deletePerson(id, person)
+          setPersons(persons.filter(p => p.id !== id))
+          setResult(true)
+          setMessage(person.name + " has been removed successfully ")
+          setTimeout(() => {
+            setResult("")
+            setMessage(" ")
+          }, 2000)
+        }
+      }
+    })
   }
+
   const handleSearch = event => {
     event.preventDefault()
     setSearchTerm(event.target.value)
@@ -99,7 +126,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification result={result} name={newPerson.name} />
+      <Notification result={result} message={message} />
       <Filter searchTerm={searchTerm} handleSearch={handleSearch} />
       <h2>add a new</h2>
       <PersonForm

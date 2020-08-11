@@ -1,49 +1,9 @@
 {
   "persons": [
     {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 4
-    },
-    {
       "name": "Spongebob Squarepants",
       "number": "040-13-42-666-1337",
       "id": 5
-    },
-    {
-      "name": "antti",
-      "number": "124",
-      "id": 9
-    },
-    {
-      "name": "Aino Li",
-      "number": "625358",
-      "id": 11
-    },
-    {
-      "name": "jsajsh",
-      "number": "122",
-      "id": 12
-    },
-    {
-      "name": "Aila ",
-      "number": "1234",
-      "id": 13
-    },
-    {
-      "name": "ajsa",
-      "number": "134",
-      "id": 14
-    },
-    {
-      "name": "lala",
-      "number": "122346",
-      "id": 15
-    },
-    {
-      "name": "jshahs",
-      "number": "162525",
-      "id": 16
     }
   ]
 }
