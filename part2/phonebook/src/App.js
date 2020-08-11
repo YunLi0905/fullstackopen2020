@@ -2,14 +2,17 @@ import React, { useState, useEffect } from "react"
 import Persons from "./components/persons"
 import Filter from "./components/filter"
 import PersonForm from "./components/personForm"
+import Notification from "./components/notification"
 
 import personService from "./services/personService"
 
 const App = () => {
   const [persons, setPersons] = useState([])
+  const [newPerson, setNewPerson] = useState([])
   const [newName, setNewName] = useState("")
   const [newNumber, setNewNumber] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
+  const [result, setResult] = useState(false)
 
   useEffect(() => {
     console.log("initialPersons")
@@ -36,15 +39,17 @@ const App = () => {
     if (persons.filter(person => person.name === newName).length > 0) {
       const person = persons.find(p => p.name === newName)
       console.log("person: ", person)
-      const result = window.confirm(
+      const resultConfirmed = window.confirm(
         newName +
           " is already added to phonebook,replace the old number with a new one?"
       )
-      if (result) {
+
+      if (resultConfirmed) {
         const personObject = {
           name: newName,
           number: newNumber
         }
+        setNewPerson(personObject)
         personService.updatePerson(person.id, personObject)
         setPersons(
           persons.map(p => {
@@ -62,12 +67,18 @@ const App = () => {
         name: newName,
         number: newNumber
       }
+      setNewPerson(personObject)
       personService.createPerson(personObject).then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
         setNewName("")
         setNewNumber("")
+        setResult(true)
       })
     }
+    setTimeout(() => {
+      setResult(false)
+      setNewPerson("")
+    }, 2000)
   }
 
   const handleDeletePerson = id => {
@@ -84,9 +95,11 @@ const App = () => {
     setSearchTerm(event.target.value)
   }
 
+  console.log("new person", newPerson)
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification result={result} name={newPerson.name} />
       <Filter searchTerm={searchTerm} handleSearch={handleSearch} />
       <h2>add a new</h2>
       <PersonForm
