@@ -31,6 +31,19 @@ app.get("/persons", (req, res) => {
   res.json(persons)
 })
 
+app.get("/persons/:id", (req, res) => {
+  console.log("id is:", req.params.id)
+  const id = Number(req.params.id)
+  const person = persons.find(person => person.id === id)
+  console.log("person is : ", person)
+
+  if (person) {
+    res.json(person)
+  } else {
+    res.status(404).end()
+  }
+})
+
 app.get("/info", (req, res) => {
   const numberOfPersons = persons.length
   const date = new Date()
