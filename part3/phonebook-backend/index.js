@@ -1,7 +1,19 @@
 const express = require("express")
 const app = express()
+const morgan = require("morgan")
 
 app.use(express.json())
+
+morgan.token("person", function(req) {
+  console.log(JSON.stringify({ name: req.body.name, number: req.body.number }))
+})
+
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms :person "
+  )
+)
+
 let persons = [
   {
     name: "Arto Hellas",
@@ -24,14 +36,18 @@ let persons = [
     id: 4
   }
 ]
+
+//hello world
 app.get("/", (req, res) => {
   res.send("<h1>Hello world!</h1>")
 })
 
+//get all people
 app.get("/persons", (req, res) => {
   res.json(persons)
 })
 
+//get a person by id
 app.get("/persons/:id", (req, res) => {
   console.log("id is:", req.params.id)
   const id = Number(req.params.id)
@@ -49,6 +65,7 @@ const generatedId = () => {
   return Math.floor(Math.random() * 10000)
 }
 
+//add a new person
 app.post("/persons", (req, res) => {
   const body = req.body
 
@@ -75,12 +92,14 @@ app.post("/persons", (req, res) => {
   res.json(person)
 })
 
+//delete a person by id
 app.delete("/persons/:id", (req, res) => {
   const id = Number(req.params.id)
   persons = persons.filter(person => person.id !== id)
   res.status(204).end()
 })
 
+//get info
 app.get("/info", (req, res) => {
   const numberOfPersons = persons.length
   const date = new Date()
