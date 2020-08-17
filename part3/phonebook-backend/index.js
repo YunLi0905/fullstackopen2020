@@ -1,6 +1,8 @@
 const express = require("express")
 const app = express()
 const morgan = require("morgan")
+const cors = require("cors")
+app.use(cors())
 
 app.use(express.json())
 
@@ -43,12 +45,12 @@ app.get("/", (req, res) => {
 })
 
 //get all people
-app.get("/persons", (req, res) => {
+app.get("/api/persons", (req, res) => {
   res.json(persons)
 })
 
 //get a person by id
-app.get("/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res) => {
   console.log("id is:", req.params.id)
   const id = Number(req.params.id)
   const person = persons.find(person => person.id === id)
@@ -66,7 +68,7 @@ const generatedId = () => {
 }
 
 //add a new person
-app.post("/persons", (req, res) => {
+app.post("/api/persons", (req, res) => {
   const body = req.body
 
   if (!body.name) {
@@ -93,14 +95,14 @@ app.post("/persons", (req, res) => {
 })
 
 //delete a person by id
-app.delete("/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res) => {
   const id = Number(req.params.id)
   persons = persons.filter(person => person.id !== id)
   res.status(204).end()
 })
 
 //get info
-app.get("/info", (req, res) => {
+app.get("/api/info", (req, res) => {
   const numberOfPersons = persons.length
   const date = new Date()
   res.send(`
@@ -109,7 +111,7 @@ app.get("/info", (req, res) => {
   `)
 })
 
-const PORT = 3002
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
