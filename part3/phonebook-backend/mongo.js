@@ -1,39 +1,13 @@
 const mongoose = require("mongoose")
 
-if (process.argv.length < 3) {
-  console.log(
-    "Please provide the password as an argument: node mongo.js <password>"
-  )
-  process.exit(1)
+export const connectToDatabase = () => {
+  mongoose
+    .connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log("Now connected to MongoDb"))
+    .catch(error =>
+      console.error(
+        "Something went wrong trying to connect to MongoDb =",
+        error
+      )
+    )
 }
-
-const password = process.argv[2]
-
-const url = `mongodb+srv://paskaphonebook:${password}@cluster0.7fq8a.mongodb.net/paskaphonebook?retryWrites=true&w=majority`
-
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-
-const PersonSchema = new mongoose.Schema({
-  name: String,
-  number: String
-})
-
-const Person = mongoose.model("Person", PersonSchema)
-
-const person = new Person({
-  name: process.argv[3],
-  number: process.argv[4]
-})
-
-person.save().then(result => {
-  console.log("added ", person.name, " number ", person.number, " to phonebook")
-  mongoose.connection.close()
-})
-
-Person.find({}).then(result => {
-  console.log("phonebook:")
-  result.forEach(person => {
-    console.log(person.name, " ", person.number)
-  })
-  mongoose.connection.close()
-})
