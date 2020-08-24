@@ -37,11 +37,12 @@ const errorHandler = (error, req, res, next) => {
 
   if (error.name === "CastError") {
     return res.status(400).send({ error: "malformatted id" })
+  } else if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message })
   }
   next(error)
 }
 
-app.use(errorHandler)
 //get a person by id
 // app.get("/api/persons/:id", (req, res) => {
 //   console.log("id is:", req.params.id)
@@ -56,7 +57,7 @@ app.use(errorHandler)
 //   }
 // })
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id)
     .then(person => {
       if (person) {
@@ -69,25 +70,29 @@ app.get("/api/persons/:id", (req, res) => {
 })
 
 //add a new person
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const body = req.body
 
-  if (!body.name) {
-    return res.status(400).json({ error: "The name is missing" })
-  }
+  // if (!body.name) {
+  //   return res.status(400).json({ error: "The name is missing" })
+  // }
 
-  if (!body.number) {
-    return res.status(400).json({ error: "The number is missing" })
-  }
+  // if (!body.number) {
+  //   return res.status(400).json({ error: "The number is missing" })
+  // }
 
   const person = new Person({
     name: body.name,
     number: body.number
   })
 
-  person.save().then(savedPerson => {
-    res.json(savedPerson)
-  })
+  person
+    .save()
+    .then(savedPerson => savedPerson.toJSON())
+    .then(savedAndFormattedPerson => {
+      res.json(savedAndFormattedPerson)
+    })
+    .catch(error => next(error))
 })
 
 //delete a person by id
@@ -116,13 +121,21 @@ app.put("/api/persons/:id", (req, res, next) => {
 
 //get info
 app.get("/api/info", (req, res) => {
-  const numberOfPersons = persons.length
-  const date = new Date()
-  res.send(`
-  <p>Phonebook has info for ${numberOfPersons} people</p>
-  <p>${date}</p>
-  `)
+  // const numberOfPersons = persons.length
+  // const date = new Date()
+  // res.send(`
+  // <p>Phonebook has info for ${numberOfPersons} people</p>
+  // <p>${date}</p>
+  // `)
+  Person.find({}).then(persons => {
+    const numberOfPersons = persons.length
+    const date = new Date()
+    res.send(`<p>Phonebook has info for ${numberOfPersons} people</p>
+  <p>${date}</p>`)
+  })
 })
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

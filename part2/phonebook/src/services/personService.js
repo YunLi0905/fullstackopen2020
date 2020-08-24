@@ -24,7 +24,12 @@ const getOne = id => {
 
 const createPerson = newPerson => {
   const request = axios.post(baseUrl, newPerson)
-  return request.then(res => res.data)
+  return request
+    .then(res => res.data)
+    .catch(error => {
+      console.log(error.response.data.error)
+      throw Error(error.response.data.error)
+    })
 }
 
 const updatePerson = (id, newPerson) => {

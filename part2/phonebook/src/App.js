@@ -37,6 +37,7 @@ const App = () => {
 
   const addPerson = event => {
     event.preventDefault()
+
     if (persons.filter(person => person.name === newName).length > 0) {
       const person = persons.find(p => p.name === newName)
       console.log("person: ", person)
@@ -70,13 +71,21 @@ const App = () => {
         number: newNumber
       }
       setNewPerson(personObject)
-      personService.createPerson(personObject).then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName("")
-        setNewNumber("")
-        setResult(true)
-        setMessage("Added " + personObject.name)
-      })
+
+      personService
+        .createPerson(personObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName("")
+          setNewNumber("")
+          setResult(true)
+          setMessage("Added " + personObject.name)
+        })
+        .catch(error => {
+          setMessage(error.message)
+
+          setResult(false)
+        })
     }
     setTimeout(() => {
       setMessage("")
