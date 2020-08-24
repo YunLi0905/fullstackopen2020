@@ -98,7 +98,7 @@ app.post("/api/persons", (req, res, next) => {
 //delete a person by id
 app.delete("/api/persons/:id", (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     })
     .catch(error => next(error))
