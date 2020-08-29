@@ -73,13 +73,13 @@ app.get("/api/persons/:id", (req, res, next) => {
 app.post("/api/persons", (req, res, next) => {
   const body = req.body
 
-  // if (!body.name) {
-  //   return res.status(400).json({ error: "The name is missing" })
-  // }
+  if (!body.name) {
+    return res.status(400).json({ error: "The name is missing" })
+  }
 
-  // if (!body.number) {
-  //   return res.status(400).json({ error: "The number is missing" })
-  // }
+  if (!body.number) {
+    return res.status(400).json({ error: "The number is missing" })
+  }
 
   const person = new Person({
     name: body.name,
