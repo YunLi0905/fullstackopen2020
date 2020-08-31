@@ -87,6 +87,18 @@ test("a blog without likes, it will default to the value 0", async () => {
   expect(body.likes).toBe(0)
 })
 
+test("a blog without title or url cannot be post", async () => {
+  const newBlog = {
+    author: "joku nimi",
+    likes: 8
+  }
+
+  const { body } = await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(400)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
