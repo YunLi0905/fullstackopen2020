@@ -4,7 +4,11 @@ const PORT = process.env.PORT
 
 console.log("port: ", PORT)
 
-const MONGODB_URI = process.env.MONGODB_URI
+let MONGODB_URI = process.env.MONGODB_URI
+
+if (process.env.NODE_ENV === "test") {
+  MONGODB_URI = process.env.TEST_MONGODB_URI
+}
 
 console.log("mongoDB: ", MONGODB_URI)
 
