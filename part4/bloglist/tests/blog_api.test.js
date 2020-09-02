@@ -62,7 +62,7 @@ describe("when there is initially some blogs saved", () => {
     expect(processdBlogToView.title).toEqual(newBlog.title)
     expect(processdBlogToView.likes).toEqual(newBlog.likes)
 
-    expect(newBlog.likes).toEqual(blogToBeUpdate.likes + 1)
+    expect(processdBlogToView.likes).toEqual(blogToBeUpdate.likes + 1)
   })
 })
 
