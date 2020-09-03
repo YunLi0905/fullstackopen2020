@@ -100,11 +100,13 @@ describe("viewing a specific blog", () => {
 
 describe("addition of a new blog", () => {
   test("a new blog can be post", async () => {
+    const users = await helper.usersInDb()
     const newBlog = {
       title: "new test blog",
       author: "Yun Li",
       url: "http://newtestblog.com",
-      likes: 100
+      likes: 100,
+      user: users[0].id
     }
 
     await api
@@ -113,19 +115,18 @@ describe("addition of a new blog", () => {
       .expect(200)
       .expect("Content-Type", /application\/json/)
 
-    const res = await api.get("/api/blogs")
-
-    const titles = res.body.map(r => r.title)
-
-    expect(res.body).toHaveLength(helper.initialBlogs.length + 1)
-    expect(titles).toContain("new test blog")
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd.length).toBe(helper.initialBlogs.length + 1)
   })
 
   test("a blog without likes, it will default to the value 0", async () => {
+    const users = await helper.usersInDb()
+
     const newBlog = {
       title: "test blog",
       author: "Y.Li",
-      url: "http://jshs.com"
+      url: "http://jshs.com",
+      user: users[0].id
     }
 
     const { body } = await api
@@ -138,9 +139,11 @@ describe("addition of a new blog", () => {
   })
 
   test("a blog without title or url cannot be post", async () => {
+    const users = await helper.usersInDb()
     const newBlog = {
       author: "joku nimi",
-      likes: 8
+      likes: 8,
+      user: users[0].id
     }
 
     const { body } = await api
@@ -218,6 +221,26 @@ describe("when there is initially one user in db", () => {
       .expect("Content-Type", /application\/json/)
 
     expect(result.body.error).toContain("`username` to be unique")
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd.length).toBe(usersAtStart.length)
+  })
+
+  test("creation fails with proper statuscode and message if username is not given", async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      name: "user without username",
+      password: "ijsixapsoj"
+    }
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/)
+
+    expect(result.body.error).toContain(" `username` is required")
 
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd.length).toBe(usersAtStart.length)

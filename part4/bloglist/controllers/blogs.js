@@ -3,11 +3,11 @@ const Blog = require("../models/blog")
 const User = require("../models/user")
 
 blogsRouter.get("/", async (req, res) => {
-  await Blog.find({}).then(blogs => {
-    console.log(blogs)
-    res.json(blogs)
-  })
+  const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 })
+
+  res.json(blogs.map(blog => blog.toJSON()))
 })
+
 blogsRouter.get("/:id", async (req, res) => {
   const blog = await Blog.findById(req.params.id)
 
@@ -20,21 +20,27 @@ blogsRouter.get("/:id", async (req, res) => {
 
 blogsRouter.post("/", async (req, res) => {
   const body = req.body
+  console.log("[POST] inbound body =", body)
 
-  const user = await User.findById(body.userId)
+  const user = await User.findById(body.user)
+  console.log("[POST] retrieved user =", user)
 
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user._id
-  })
+  if (user === undefined) {
+    return res.status(400).json({ error: "user missing" })
+  } else {
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: user._id
+    })
 
-  const savedBlog = await blog.save()
-  user.blogs = user.blogs.concat(savedBlog._id)
-  await user.save()
-  res.json(savedBlog)
+    const savedBlog = await blog.save()
+    user.blogs = user.blogs.concat(savedBlog._id)
+    await user.save()
+    res.json(savedBlog)
+  }
 })
 
 blogsRouter.delete("/:id", async (req, res) => {
