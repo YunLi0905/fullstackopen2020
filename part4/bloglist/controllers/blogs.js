@@ -52,8 +52,18 @@ blogsRouter.post("/", async (req, res) => {
 })
 
 blogsRouter.delete("/:id", async (req, res) => {
-  await Blog.findByIdAndRemove(req.params.id)
-  res.status(204).end()
+  const blog = await Blog.findById(req.params.id)
+  const userid = jwt.verify(req.token, process.env.SECRET)
+  //res.status(204).end()
+  console.log("blog.user.toString(): ", blog.user.toString())
+  console.log("user ID toString: ", userid)
+  if (blog.user.toString() === userid.id) {
+    await Blog.findByIdAndRemove(req.params.id)
+    console.log(blog, "has been deleted")
+    return res.status(204).end()
+  } else {
+    return res.status(404).end()
+  }
 })
 
 blogsRouter.put("/:id", async (req, res) => {
