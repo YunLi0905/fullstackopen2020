@@ -3,14 +3,18 @@ const supertest = require("supertest")
 const helper = require("./test_helper")
 const app = require("../app")
 const api = supertest(app)
-const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
 const Blog = require("../models/blog")
 const User = require("../models/user")
 
 beforeEach(async () => {
+  await User.deleteMany({})
   await Blog.deleteMany({})
-  const blogObjects = helper.initialBlogs.map(blog => new Blog(blog))
+  const user = await helper.addUser("juho", "secret")
+  const blogObjects = helper.initialBlogs
+    .map(blog => ({ ...blog, user }))
+    .map(blog => new Blog(blog))
 
   const promiseArray = blogObjects.map(blog => blog.save())
   await Promise.all(promiseArray)
@@ -86,8 +90,6 @@ describe("viewing a specific blog", () => {
   test("fails with statuscode 404 if blog does not exist", async () => {
     const validNoneExistingId = await helper.nonExistingId
 
-    console.log(validNoneExistingId)
-
     await api.get(`/api/blogs/${validNoneExistingId}`).expect(404)
   })
 
@@ -99,8 +101,9 @@ describe("viewing a specific blog", () => {
 })
 
 describe("addition of a new blog", () => {
-  test("a new blog can be post", async () => {
+  test("a new blog can be post when token is provided", async () => {
     const users = await helper.usersInDb()
+
     const newBlog = {
       title: "new test blog",
       author: "Yun Li",
@@ -109,14 +112,34 @@ describe("addition of a new blog", () => {
       user: users[0].id
     }
 
+    const token = jwt.sign(users[0], process.env.SECRET)
+
     await api
       .post("/api/blogs")
       .send(newBlog)
+      .set("Authorization", `bearer ${token}`)
       .expect(200)
       .expect("Content-Type", /application\/json/)
 
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd.length).toBe(helper.initialBlogs.length + 1)
+  })
+
+  test("adding a blog fails with proper status code 401 if token is not provided", async () => {
+    const newBlog = {
+      title: "new test blog",
+      author: "Yun Li",
+      url: "http://newtestblog.com",
+      likes: 100
+    }
+
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(401)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd.length).toBe(helper.initialBlogs.length)
   })
 
   test("a blog without likes, it will default to the value 0", async () => {
@@ -129,9 +152,12 @@ describe("addition of a new blog", () => {
       user: users[0].id
     }
 
+    const token = jwt.sign(users[0], process.env.SECRET)
+
     const { body } = await api
       .post("/api/blogs")
       .send(newBlog)
+      .set("Authorization", `bearer ${token}`)
       .expect(200)
       .expect("Content-Type", /application\/json/)
 
@@ -146,9 +172,12 @@ describe("addition of a new blog", () => {
       user: users[0].id
     }
 
+    const token = jwt.sign(users[0], process.env.SECRET)
+
     const { body } = await api
       .post("/api/blogs")
       .send(newBlog)
+      .set("Authorization", `bearer ${token}`)
       .expect(400)
 
     const blogsAtEnd = await helper.blogsInDb()
@@ -157,11 +186,17 @@ describe("addition of a new blog", () => {
 })
 
 describe("deletion of a blog", () => {
-  test("a blog can be deleted", async () => {
+  test("a blog can be deleted only by the user who added the blog", async () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+    const users = await helper.usersInDb()
+    const token = jwt.sign(users[0], process.env.SECRET)
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", `bearer ${token}`)
+      .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
@@ -174,13 +209,7 @@ describe("deletion of a blog", () => {
 describe("when there is initially one user in db", () => {
   beforeEach(async () => {
     await User.deleteMany({})
-    const passwordHash = await bcrypt.hash("secret", 10)
-    const user = new User({
-      username: "root",
-      password: passwordHash
-    })
-
-    await user.save()
+    await helper.addUser("root", "secret")
   })
 
   test("creation succeeds with a fresh username", async () => {
