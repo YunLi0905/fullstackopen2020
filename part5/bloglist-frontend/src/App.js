@@ -7,13 +7,14 @@ import loginService from "./services/login"
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [newBlog, setNewBlog] = useState("")
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
   const [title, setTitle] = useState("")
   const [author, setAuthor] = useState("")
   const [url, setUrl] = useState("")
+  const [result, setResult] = useState("")
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -30,16 +31,33 @@ const App = () => {
 
   const addBlog = event => {
     event.preventDefault()
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url
-    }
+    try {
+      const blogObject = {
+        title: title,
+        author: author,
+        url: url
+      }
 
-    blogService.create(blogObject).then(returnedBlog => {
-      setBlogs(blogs.concat(returnedBlog))
-      setNewBlog("")
-    })
+      blogService.create(blogObject).then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        setNewBlog("")
+        setMessage(
+          `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+        )
+        setResult(true)
+        setTimeout(() => {
+          setMessage(null)
+          setResult("")
+        }, 5000)
+      })
+    } catch (exception) {
+      setMessage("cannot be added")
+      setResult(false)
+      setTimeout(() => {
+        setMessage(null)
+        setResult("")
+      }, 5000)
+    }
   }
 
   const handleLogout = async event => {
@@ -52,9 +70,9 @@ const App = () => {
       setUsername("")
       setPassword("")
     } catch (exception) {
-      setErrorMessage(exception.message)
+      setMessage(exception.message)
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage(null)
       }, 5000)
     }
   }
@@ -75,9 +93,11 @@ const App = () => {
       setUsername("")
       setPassword("")
     } catch (exception) {
-      setErrorMessage("Wrong credentials")
+      setMessage("Wrong username or password")
+      setResult(false)
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage(null)
+        setResult("")
       }, 5000)
     }
   }
@@ -147,7 +167,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={errorMessage} />
+      <Notification message={message} result={result} />
       {user === null ? (
         <div>
           <h2>Log in to application</h2>
