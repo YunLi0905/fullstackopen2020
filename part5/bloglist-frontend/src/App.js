@@ -11,6 +11,9 @@ const App = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
+  const [title, setTitle] = useState("")
+  const [author, setAuthor] = useState("")
+  const [url, setUrl] = useState("")
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -28,8 +31,9 @@ const App = () => {
   const addBlog = event => {
     event.preventDefault()
     const blogObject = {
-      title: newBlog.title,
-      author: newBlog.author
+      title: title,
+      author: author,
+      url: url
     }
 
     blogService.create(blogObject).then(returnedBlog => {
@@ -78,14 +82,10 @@ const App = () => {
     }
   }
 
-  const handleBlogChange = event => {
-    setNewBlog(event.target.value)
-  }
-
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
-        username
+        username{" "}
         <input
           type="text"
           value={username}
@@ -94,7 +94,7 @@ const App = () => {
         />
       </div>
       <div>
-        password
+        password{" "}
         <input
           type="text"
           value={password}
@@ -108,7 +108,39 @@ const App = () => {
 
   const blogForm = () => (
     <form onSubmit={addBlog}>
-      <input value={newBlog} onChange={handleBlogChange} />
+      {/* <input value={newBlog} onChange={handleBlogChange} /> */}
+      <div>
+        <h2>create new</h2>
+        <div>
+          title:{"   "}
+          <input
+            type="text"
+            value={newBlog.title}
+            name="title"
+            onChange={({ target }) => setTitle(target.value)}
+          />
+        </div>
+        <div>
+          author:{" "}
+          <input
+            type="text"
+            value={newBlog.author}
+            name="author"
+            onChange={({ target }) => setAuthor(target.value)}
+          />
+        </div>
+        <div>
+          url:{"   "}
+          <input
+            type="text"
+            value={newBlog.url}
+            name="url"
+            onChange={({ target }) => setUrl(target.value)}
+          />
+        </div>
+
+        <button type="submit">create</button>
+      </div>
     </form>
   )
 
@@ -125,6 +157,8 @@ const App = () => {
         <div>
           {user.username} logged-in{" "}
           <button onClick={handleLogout}>logout</button>
+          <br />
+          {blogForm()}
           {blogs.map(blog => (
             <Blog key={blog.id} blog={blog} />
           ))}
