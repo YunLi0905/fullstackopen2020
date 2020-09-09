@@ -27,5 +27,5 @@
     "nodemon": "^2.0.4",
     "supertest": "^4.0.2"
   },
-  "proxy": "http://localhost:3003"
+  "proxy": "http://localhost:3001"
 }
