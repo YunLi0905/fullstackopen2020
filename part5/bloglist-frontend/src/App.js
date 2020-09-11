@@ -63,6 +63,30 @@ const App = () => {
     }
   }
 
+  const addLike = blog => {
+    try {
+      const blogObject = {
+        ...blog,
+        likes: blog.likes + 1
+      }
+
+      blogService.update(blog.id, blogObject)
+
+      setBlogs(
+        blogs.map(b => {
+          if (b.id !== blog.id) {
+            return b
+          }
+          return { ...b, likes: blogObject.likes }
+        })
+      )
+    } catch (exception) {
+      setMessage("cannot be updated")
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    }
+  }
   const handleLogout = async event => {
     event.preventDefault()
     console.log("log out account: ", username)
@@ -105,6 +129,10 @@ const App = () => {
     }
   }
 
+  const sortByLike = (blog1, blog2) => {
+    return blog2.likes - blog1.likes
+  }
+
   return (
     <div>
       <h2>blogs</h2>
@@ -126,7 +154,7 @@ const App = () => {
           <button onClick={handleLogout}>logout</button>
           <br />
           <br />
-          <Togglable buttonLable="create new blog" hide="cancel">
+          <Togglable buttonLable="create a new blog" hide="cancel">
             <BlogForm
               addBlog={addBlog}
               title={title}
@@ -138,8 +166,8 @@ const App = () => {
             />
           </Togglable>
           <br />
-          {blogs.map(blog => (
-            <Blog key={blog.id} blog={blog} />
+          {blogs.sort(sortByLike).map(blog => (
+            <Blog key={blog.id} blog={blog} addLike={addLike} />
           ))}
         </div>
       )}

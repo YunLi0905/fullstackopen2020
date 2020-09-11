@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import Togglable from "./Togglable"
-const Blog = ({ blog }) => {
+
+const Blog = ({ blog, addLike }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -9,11 +9,16 @@ const Blog = ({ blog }) => {
     marginBottom: 5
   }
   const [visible, setVisible] = useState(false)
+
   const hideWhenVisible = { display: visible ? "none" : "" }
   const showWhenVisible = { display: visible ? "" : "none" }
 
   const toggleVisibility = () => {
     setVisible(!visible)
+  }
+  const handleAddLike = event => {
+    event.preventDefault()
+    addLike(blog)
   }
 
   return (
@@ -30,7 +35,7 @@ const Blog = ({ blog }) => {
         </p>
         <p>{blog.url}</p>
         <p>
-          likes {blog.likes} <button>like</button>
+          likes {blog.likes} <button onClick={handleAddLike}>like</button>
         </p>
         <p>{blog.author}</p>
       </div>
