@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-const Blog = ({ blog, addLike }) => {
+const Blog = ({ blog, addLike, deleteBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -21,6 +21,11 @@ const Blog = ({ blog, addLike }) => {
     addLike(blog)
   }
 
+  const handleDeleteBlog = event => {
+    event.preventDefault()
+    deleteBlog(blog)
+  }
+
   return (
     <div>
       <div style={{ ...blogStyle, ...hideWhenVisible }}>
@@ -38,6 +43,7 @@ const Blog = ({ blog, addLike }) => {
           likes {blog.likes} <button onClick={handleAddLike}>like</button>
         </p>
         <p>{blog.author}</p>
+        <button onClick={handleDeleteBlog}>remove</button>
       </div>
     </div>
   )

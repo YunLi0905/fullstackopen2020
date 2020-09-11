@@ -63,10 +63,20 @@ const App = () => {
     }
   }
 
+  const deleteBlog = blog => {
+    console.log("delete blog: ", blog)
+    const resultConfirmed = window.confirm(
+      `Remove blog ${blog.title} by ${blog.author}?`
+    )
+    if (resultConfirmed) {
+      blogService.deleteBlog(blog.id, blog)
+      setBlogs(blogs.filter(b => b.id !== blog.id))
+    }
+  }
+
   const addLike = blog => {
     try {
       const blogObject = {
-        ...blog,
         likes: blog.likes + 1
       }
 
@@ -167,7 +177,12 @@ const App = () => {
           </Togglable>
           <br />
           {blogs.sort(sortByLike).map(blog => (
-            <Blog key={blog.id} blog={blog} addLike={addLike} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              addLike={addLike}
+              deleteBlog={deleteBlog}
+            />
           ))}
         </div>
       )}
