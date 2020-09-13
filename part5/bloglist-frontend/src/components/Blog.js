@@ -27,14 +27,19 @@ const Blog = ({ blog, addLike, deleteBlog }) => {
   }
 
   return (
-    <div>
-      <div style={{ ...blogStyle, ...hideWhenVisible }}>
+    <div className="blogEntry">
+      <div className="visiblePart" style={{ ...blogStyle, ...hideWhenVisible }}>
         <p>
-          {blog.title} <button onClick={toggleVisibility}>view</button>
+          {blog.title}
+          {" by "} {blog.author}
+          <button onClick={toggleVisibility}>view</button>
         </p>
       </div>
 
-      <div style={{ ...blogStyle, ...showWhenVisible }}>
+      <div
+        className="togglablePart"
+        style={{ ...blogStyle, ...showWhenVisible }}
+      >
         <p>
           {blog.title} <button onClick={toggleVisibility}>hide</button>{" "}
         </p>
