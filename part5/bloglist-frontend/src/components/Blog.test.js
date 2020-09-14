@@ -17,8 +17,16 @@ describe("<Blog />", () => {
     component.debug()
   })
 
-  test("at start the togglable part is not displayed", () => {
+  test("at start likes and url of the blog are not displayed", () => {
     const div = component.container.querySelector(".togglablePart")
     expect(div).toHaveStyle("display:none")
+  })
+
+  test("url and likes are shown when the view button is clicked", () => {
+    const button = component.getByText("view")
+    fireEvent.click(button)
+
+    const div = component.container.querySelector(".togglablePart")
+    expect(div).not.toHaveStyle("display:none")
   })
 })
