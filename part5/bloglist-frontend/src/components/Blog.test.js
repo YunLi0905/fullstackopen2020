@@ -1,6 +1,7 @@
 import React from "react"
 import "@testing-library/jest-dom/extend-expect"
 import { render, fireEvent } from "@testing-library/react"
+import { prettyDOM } from "@testing-library/dom"
 import Blog from "./Blog"
 
 describe("<Blog />", () => {
@@ -15,6 +16,9 @@ describe("<Blog />", () => {
   beforeEach(() => {
     component = render(<Blog blog={blog} />)
     component.debug()
+    //
+    //    const li = component.container.querySelector("li")
+    //    console.log(prettyDOM(li))
   })
 
   test("at start likes and url of the blog are not displayed", () => {
@@ -28,5 +32,16 @@ describe("<Blog />", () => {
 
     const div = component.container.querySelector(".togglablePart")
     expect(div).not.toHaveStyle("display:none")
+  })
+
+  test("if the like button is clicked twice, the event handler received as props is called twice", () => {
+    const mockHandler = jest.fn()
+    const blogToUpdate = render(<Blog blog={blog} addLike={mockHandler} />)
+
+    const button = blogToUpdate.container.querySelector(".addLike")
+    fireEvent.click(button)
+    fireEvent.click(button)
+
+    expect(mockHandler.mock.calls).toHaveLength(2)
   })
 })
