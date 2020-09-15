@@ -10,13 +10,14 @@ const BlogForm = ({
   handleUrlChange
 }) => {
   return (
-    <div>
-      <form onSubmit={addBlog}>
+    <div className="formDiv">
+      <form className="blogForm" onSubmit={addBlog}>
         <div>
           <h2>create new</h2>
           <div>
             title:{"   "}
             <input
+              id="title"
               type="text"
               value={title}
               name="title"
@@ -26,6 +27,7 @@ const BlogForm = ({
           <div>
             author:{" "}
             <input
+              id="author"
               type="text"
               value={author}
               name="author"
@@ -35,6 +37,7 @@ const BlogForm = ({
           <div>
             url:{"   "}
             <input
+              id="url"
               type="text"
               value={url}
               name="url"
@@ -42,7 +45,9 @@ const BlogForm = ({
             />
           </div>
 
-          <button type="submit">create</button>
+          <button className="submitButton" type="submit">
+            create
+          </button>
           <br />
         </div>
       </form>

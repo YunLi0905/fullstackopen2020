@@ -3,6 +3,7 @@ import "@testing-library/jest-dom/extend-expect"
 import { render, fireEvent } from "@testing-library/react"
 import { prettyDOM } from "@testing-library/dom"
 import Blog from "./Blog"
+import BlogForm from "./BlogForm"
 
 describe("<Blog />", () => {
   let component
@@ -16,9 +17,6 @@ describe("<Blog />", () => {
   beforeEach(() => {
     component = render(<Blog blog={blog} />)
     component.debug()
-    //
-    //    const li = component.container.querySelector("li")
-    //    console.log(prettyDOM(li))
   })
 
   test("at start likes and url of the blog are not displayed", () => {
@@ -43,5 +41,48 @@ describe("<Blog />", () => {
     fireEvent.click(button)
 
     expect(mockHandler.mock.calls).toHaveLength(2)
+  })
+
+  describe("<BlogForm />", () => {
+    test("the form calls the event handlers it received as props ", () => {
+      const addBlog = jest.fn()
+      const handleTitleChange = jest.fn()
+      const handleAuthorChange = jest.fn()
+      const handleUrlChange = jest.fn()
+
+      const newBlogForm = render(
+        <BlogForm
+          addBlog={addBlog}
+          handleTitleChange={handleTitleChange}
+          handleAuthorChange={handleAuthorChange}
+          handleUrlChange={handleUrlChange}
+        />
+      )
+
+      const author = newBlogForm.container.querySelector("#author")
+      const title = newBlogForm.container.querySelector("#title")
+      const url = newBlogForm.container.querySelector("#url")
+
+      const form = newBlogForm.container.querySelector("form")
+
+      fireEvent.change(title, {
+        target: { value: "testing of blogForm could be easier" }
+      })
+
+      fireEvent.change(author, {
+        target: { value: "Yun Li" }
+      })
+
+      fireEvent.change(url, {
+        target: { value: "http://hsaixoh.com" }
+      })
+
+      fireEvent.submit(form)
+
+      expect(addBlog.mock.calls).toHaveLength(1)
+      expect(handleTitleChange.mock.calls).toHaveLength(1)
+      expect(handleAuthorChange.mock.calls).toHaveLength(1)
+      expect(handleUrlChange.mock.calls).toHaveLength(1)
+    })
   })
 })
