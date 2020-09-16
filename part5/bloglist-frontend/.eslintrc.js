@@ -2,17 +2,18 @@ module.exports = {
   env: {
     browser: true,
     es6: true,
-    "jest/globals": true
+    "jest/globals": true,
+    "cypress/global": true,
   },
   extends: ["eslint:recommended", "plugin:react/recommended"],
   parserOptions: {
     ecmaFeatures: {
-      jsx: true
+      jsx: true,
     },
     ecmaVersion: 2008,
-    sourseType: "module"
+    sourseType: "module",
   },
-  plugins: ["react", "jest"],
+  plugins: ["react", "jest", "cypress"],
   rules: {
     indent: ["error", 2],
     "linebreak-style": ["error", "unix"],
@@ -23,6 +24,6 @@ module.exports = {
     "object-curly-spacing": ["error", "always"],
     "arrow-spacing": ["error", { before: true, after: true }],
     "no-console": 0,
-    "react/prop-types": 0
-  }
+    "react/prop-types": 0,
+  },
 }
