@@ -17,7 +17,7 @@ describe("Blog app", function () {
     cy.contains("Login")
   })
 
-  it("Login form can be shown", function () {
+  it("Login form is shown", function () {
     cy.contains("Login")
     cy.contains("username")
     cy.contains("password")
@@ -27,21 +27,24 @@ describe("Blog app", function () {
     cy.contains("login").click()
   })
 
-  it("user can login", function () {
-    cy.contains("login").click()
-    cy.get("#username").type("ainoL")
-    cy.get("#password").type("12345")
-    cy.get("#login-button").click()
-
-    cy.contains("ainoL logged-in")
-  })
-
   describe("when logged in", function () {
-    beforeEach(function () {
+    it.only("login fails with wrong username or password", function () {
+      cy.contains("login").click()
+      cy.get("#username").type("ainoL")
+      cy.get("#password").type("wrong")
+      cy.get("#login-button").click()
+      cy.get(".error")
+        .should("contain", "Wrong username or password")
+        .and("have.css", "color", "rgb(255, 0, 0)")
+    })
+
+    it("suceeds with correct credentials", function () {
       cy.contains("login").click()
       cy.get("#username").type("ainoL")
       cy.get("#password").type("12345")
       cy.get("#login-button").click()
+
+      cy.contains("ainoL logged-in")
     })
   })
 })
